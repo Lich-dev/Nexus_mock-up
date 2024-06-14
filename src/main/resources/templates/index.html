@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav>
+        <img src="/img/17085531.png">
+        <ul>
+            <li><a href="/">Games</a></li>
+            <li><a href="/news">News</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/profile">Profile</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/create">Create</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/register">Register</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/login">Login</a></li>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit" class="btn btn-link">Logout</button>
+            </form>
+        </ul>
+    </nav>
+</header>
+<main>
+    <h1>Games List:</h1>
+
+    <section id="game_list">
+        <a class="game" th:each="game : ${games}" th:href="@{'/games/' + ${game.id}}">
+            <img th:src="${game.imagePath}">
+            <h2 th:text="${game.name}"></h2>
+        </a>
+    </section>
+</main>
+<footer>
+    <p>&copy; 2023 Neksus. Práva nevyhrazena :(</p>
+</footer>
+</body>
+</html>

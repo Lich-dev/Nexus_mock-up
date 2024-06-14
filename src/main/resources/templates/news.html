@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>News</title>
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav>
+        <img src="/img/17085531.png">
+        <ul>
+            <li><a href="/">Games</a></li>
+            <li><a href="/news">News</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/profile">Profile</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/create">Create</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/register">Register</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/login">Login</a></li>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit" class="btn btn-link">Logout</button>
+            </form>
+        </ul>
+    </nav>
+</header>
+<main>
+    <article id="news_top">
+        <h1>News</h1>
+        <button sec:authorize="hasRole('ROLE_ADMIN')" class="upload_author_only" id="edit_news" onclick="redirect()">Post news</button>
+    </article>
+    <section id="global_news">
+        <section th:each="newsItem : ${news}">
+            <article th:if="${newsItem.modId} != null"  class="global_news">
+                <img th:if="${newsItem.imagePath} != null" th:src="${newsItem.imagePath}">
+                <img th:if="${newsItem.imagePath} == null" th:src="'/img/17085531.png'">
+                <h3 th:text="${newsItem.releaseDate}"></h3>
+                <h3 th:text="${newsItem.headline}"></h3>
+                <p th:text="${newsItem.description}"></p>
+                <a th:text="'Read More'" th:href="'/games/1/'+${newsItem.modId}"></a>
+            </article>
+            <article th:if="${newsItem.modId} == null"  class="global_news" onclick="show_popup(show_news)">
+                <img th:if="${newsItem.imagePath} != null" th:src="${newsItem.imagePath}">
+                <img th:if="${newsItem.imagePath} == null" th:src="'/img/17085531.png'">
+                <h3 th:text="${newsItem.releaseDate}"></h3>
+                <h3 th:text="${newsItem.headline}"></h3>
+                <p th:text="${newsItem.description}"></p>
+            </article>
+        </section>
+    </section>
+</main>
+<footer>
+    <p>&copy; 2023 Neksus. Práva nevyhrazena :(</p>
+</footer>
+
+<script>
+
+var show_news = document.getElementById("show_news");
+
+function redirect() {
+
+    window.location.href = "/news/create";
+
+}
+
+function show_popup(popup) {
+
+    popup.style.display = "block";
+
+}
+
+function close_popup(popup) {
+
+    popup.style.display = "none";
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create News</title>
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav>
+        <img src="/img/17085531.png">
+        <ul>
+            <li><a href="/">Games</a></li>
+            <li><a href="/news">News</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/profile">Profile</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/create">Create</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/register">Register</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/login">Login</a></li>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit" class="btn btn-link">Logout</button>
+            </form>
+        </ul>
+    </nav>
+</header>
+
+<main class="login-container">
+    <div class="login-section">
+    <h1>Post News:</h1>
+    <form method="post" th:action="@{/news/create}">
+        <input name="author" th:value="${#authentication.name}" type="hidden"/>
+        <label for="headline">Headline:</label>
+        <input id="headline" name="headline" required type="text"/><br>
+        <label for="imagePath">Image Url:</label>
+        <input id="imagePath" name="imagePath" required type="text"/><br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required style="height: 9rem; width: 90%;"></textarea><br>
+        <input class="submit" type="submit" value="Post News"/>
+    </form>
+
+    </div>
+</main>
+<footer>
+    <p>&copy; 2023 Neksus. Práva nevyhrazena :(</p>
+</footer>
+</body>
+</html>

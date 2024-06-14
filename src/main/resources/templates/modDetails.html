@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${mod.modName}"></title>
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav>
+        <img src="/img/17085531.png">
+        <ul>
+            <li><a href="/">Games</a></li>
+            <li><a href="/news">News</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/profile">Profile</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/create">Create</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/register">Register</a></li>
+            <li sec:authorize="!isAuthenticated()"><a href="/login">Login</a></li>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit" class="btn btn-link">Logout</button>
+            </form>
+        </ul>
+    </nav>
+</header>
+<main id="mod">
+
+    <article id="top1">
+
+        <h2><a href="/"> Games </a> / <a href="/games/1" th:text="${game.name}"></a> / <a th:text="${mod.modName}"></a></h2>
+
+        <h4 th:text="${'Author: ' + author.username}"></h4> <span
+                th:text="${'Released: ' + mod.datePublished}"></span>
+    </article>
+
+    <article id="top2">
+
+        <h1 th:text="${mod.modName}"></h1>
+        <article id="track">
+            <h3 th:text="${'Follows: ' + mod.trackCount}"></h3>
+            <form action="#" method="post" th:action="@{/mods/{modId}/follow(modId=${mod.modId})}">
+                <input sec:authorize="isAuthenticated()" type="submit" value="Track"/>
+            </form>
+        </article>
+    </article>
+
+    <article  id="images">
+        <img th:each="image : ${images}" th:src="${image.imagePath}">
+    </article>
+
+    <article id="nav2">
+        <button onclick="description()">Description</button>
+        <button onclick="changelog()">Changelog</button>
+        <button onclick="files()">Files</button>
+        <button onclick="news()">News</button>
+        <button onclick="user_images()">User Images</button>
+        <button onclick="videos()">Videos</button>
+        <button onclick="comments()">Comments</button>
+    </article>
+
+    <section id="description">
+        <p th:text="${mod.description}"></p>
+    </section>
+
+    <section id="changelog" style="display: none;">
+
+        <button th:if="${#authentication.name} == ${author.email} or ${isAdmin} == 'Y'" class="upload_author_only" id="add_new_changelog" onclick="show_popup(changelog_popup)">
+            Add update
+        </button>
+
+        <article class="list" id="changes_list">
+
+            <ul class="changelog" th:each="changelog : ${changelogs}">
+
+                <li>
+                    <h3 th:text="${changelog.version}"></h3>
+                    <p th:text="${changelog.description}"></p>
+                </li>
+
+            </ul>
+
+        </article>
+
+    </section>
+
+    <section class="popup" id="changelog_popup" style="display: none;">
+
+        <span class="close" onclick="close_popup(changelog_popup)">&times;</span>
+        <label for="version">Version:</label>
+        <input id="version" type="text">
+        <label for="changelog_text">Comment:</label>
+        <textarea id="changelog_text"></textarea>
+        <button class="upload_user" onclick="submitChangelog()">Add</button>
+
+    </section>
+
+    <section id="files" style="display: none;">
+
+        <button sec:authorize="isAuthenticated()" class="upload_author_only" id="add_file_to_mod" onclick="show_popup(file_popup)">Add file</button>
+
+        <article class="list" id="files_list">
+
+            <article class="souboros" th:each="file : ${files}">
+                <h3 th:text="${file.description}"></h3>
+                <h3 th:text="${file.version}"></h3>
+                <p>Released: <span th:text="${#dates.format(file.releaseDate, 'yyyy-MM-dd')}"></span></p>
+                <a th:href="${file.filePath}" target="_blank"><button>DOWNLOAD</button></a>
+            </article>
+
+        </article>
+
+    </section>
+
+    <section class="popup" id="file_popup" style="display: none;">
+        <form method="post" th:action="@{/mods/filepost}" enctype="multipart/form-data">
+            <input name="mod" th:value="${mod.modId}" type="hidden"/>
+            <input name="game" th:value="${mod.gameId}" type="hidden"/>
+            <label for="uploadedFile">File:</label>
+            <input type="file" id="uploadedFile" name="uploadedFile" value="uploadedFile" required accept="application/*">
+            <br>
+            <label for="fileDescription">Description: </label>
+            <textarea id="fileDescription" name="description" placeholder="This file is the..." required></textarea>
+            <br>
+            <label for="fileVersion">Version: </label>
+            <input id="fileVersion" placeholder="1.0.0" name="version" required type="text"/>
+            <br>
+            <input class="submit" type="submit" value="Post File"/>
+        </form>
+    </section>
+
+    <section id="news" style="display: none;">
+
+        <button sec:authorize="isAuthenticated()" class="upload_author_only" id="add_news_to_mod" onclick="show_popup(news_popup)">Add news</button>
+
+        <article class="list" id="list_of_news">
+
+            <ul class="novinka" th:each="newsItem : ${news}">
+                <article class="headline_comment">
+                    <h4 th:text="${newsItem.headline}"></h4>
+                    <p>Release date: <span th:text="${newsItem.releaseDate}"></span></p>
+                    <p>Author: <span th:text="${newsItem.author}"></span></p>
+                </article>
+                <li th:text="${newsItem.description}"></li>
+            </ul>
+
+        </article>
+
+    </section>
+
+    <section class="popup" id="news_popup" style="display: none;">
+
+        <span class="close" onclick="close_popup(news_popup)">&times;</span>
+        <label for="news_headline">Header:</label>
+        <input id="news_headline" type="text">
+        <label for="news_text">Text:</label>
+        <textarea id="news_text"></textarea>
+        <button class="upload_user" onclick="submitNews()">Add</button>
+
+    </section>
+
+    <section id="user_images" style="display: none;">
+
+        <button sec:authorize="isAuthenticated()" class="upload_user" id="upload_mod_button" onclick="show_popup(image_popup)">Upload new image
+        </button>
+
+        <article class="list" id="list_of_images">
+            <img src="SkyUI/4.webp">
+        </article>
+
+    </section>
+
+    <section class="popup" id="image_popup" style="display: none;">
+
+        <span class="close" onclick="close_popup(image_popup)">&times;</span>
+        <label for="image_link">Link to image:</label>
+        <textarea id="image_link"></textarea>
+        <button class="upload_user" onclick="submitImage()">Add</button>
+
+    </section>
+
+    <section id="videos" style="display: none;">
+
+        <button sec:authorize="isAuthenticated()" class="upload_author_only" id="new_video" onclick="show_popup(video_popup)">Upload new video</button>
+
+        <div class="list" id="video_list">
+            <article th:each="video : ${videos}">
+            <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0" height="315"
+                    th:src="${video.videoPath.replace('watch?v=', 'embed/')}"
+                    width="560"></iframe></article>
+        </div>
+
+    </section>
+    <section class="popup" id="video_popup" style="display: none;">
+
+        <span class="close" onclick="close_popup(video_popup)">&times;</span>
+
+        <label for="video_link">Link to video:</label>
+        <input id="video_link" required type="text"/>
+
+        <input id="mod_id" th:value="${mod.modId}" type="hidden" value=""/>
+
+        <button class="upload_user" onclick="submitVideo()">Add</button>
+
+    </section>
+
+    <section id="comments" style="display: none;">
+
+        <button sec:authorize="isAuthenticated()" class="upload_user" id="add_comment" onclick="show_popup(comment_popup)">Add comment</button>
+
+        <article class="list" id="comment_list">
+
+            <article class="comment" th:each="comment : ${comments}">
+                    <article class="created">
+                        <p th:text="${comment.userId}"></p>
+                        <p th:text="${#dates.format(comment.dateCommented, 'dd-MM-yyyy HH:mm')}"></p>
+                    </article>
+                    <p class="content" th:text="${comment.commentText}"></p>
+            </article>
+
+        </article>
+
+    </section>
+
+    <section id="comment_popup" class="popup" style="display: none;">
+
+        <span class="close" onclick="close_popup(comment_popup)">&times;</span>
+        <div id="comment_section"></div>
+        <input id="author" name="author" th:value="${#authentication.name}" type="hidden"/>
+        <textarea id="comment_text"></textarea>
+        <button class="submit" onclick="submitComment()">Submit Comment</button>
+
+    </section>
+
+</main>
+
+<footer>
+    <p>&copy; 2023 Neksus. Práva nevyhrazena :(</p>
+</footer>
+</body>
+<script src="/js/modDetails.js"></script>
+</html>
