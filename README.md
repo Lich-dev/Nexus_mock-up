@@ -1,10 +1,10 @@
 # Neksus_no-docker
 
-About:
-This application is a mock-up of the site Nexus and tries to achieve the same capabilities - freely sharing mods with other members in the community
-The project isn't fully finished and some features are missing or don't work as intended
-This project was made in collaboration with Jan Musil (jnmsl on github) and Martin Krejzl (Merhern on github)
-In this version of the project the pre-existing database is replaced with a database export file so you can build your own quickly and all sensitive data was expunged
+About:\
+This application is a mock-up of the site Nexus and tries to achieve the same capabilities - freely sharing mods with other members in the community\
+The project isn't fully finished and some features are missing or don't work as intended\
+This project was made in collaboration with Jan Musil (jnmsl on github) and Martin Krejzl (Merhern on github)\
+In this version of the project the pre-existing database is replaced with a database export file so you can build your own quickly and all sensitive data was expunged\
 Technologies used: Spring and Thymeleaf frameworks, Oracle database, structured in MVC architecture
 
 Before launching:
